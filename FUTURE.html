@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Future Background Video</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: 'Roboto', sans-serif;
+            overflow: hidden; /* Ẩn thanh cuộn */
+            background-image: url('1.jpg'); /* Nền hình ảnh */
+            background-size: cover; /* Đảm bảo hình ảnh phủ đầy */
+            background-position: center; /* Đặt hình ảnh ở giữa */
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Lớp phủ mờ */
+            z-index: 1; /* Đặt lớp phủ trên nền hình ảnh */
+        }
+
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10; /* Đặt video trên tất cả nội dung */
+        }
+
+        video {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 1);
+            z-index: 9; /* Lớp che phủ video */
+            transition: opacity 2s ease; /* Hiệu ứng mờ */
+        }
+
+        .menu-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            z-index: 11;
+        }
+
+        .menu {
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+        }
+
+        .menu button {
+            margin-left: 15px;
+            padding: 12px 20px;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .menu button:hover {
+            background-color: #FFD700; /* Màu nền khi hover */
+            color: black; /* Màu chữ khi hover */
+        }
+
+        .content {
+            position: relative;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            z-index: 2; /* Đặt nội dung trên lớp phủ */
+            opacity: 0; /* Ẩn nội dung ban đầu */
+            transition: opacity 2s ease; /* Hiệu ứng cho nội dung */
+        }
+
+        h1 {
+            font-size: 3em;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        p {
+            font-size: 1.5em;
+            font-weight: 300;
+        }
+
+        .carousel {
+            position: absolute;
+            top: 260px;
+            left: 120px;
+            display: flex;
+            overflow: hidden;
+            width: 500px;
+            height: 400px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            opacity: 0; /* Ẩn carousel ban đầu */
+            transition: opacity 2s ease; /* Hiệu ứng cho carousel */
+        }
+
+        .carousel-images {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: calc(500px * 6);
+        }
+
+        .carousel img {
+            width: 500px;
+            height: 400px;
+        }
+
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .button-prev {
+            left: 10px;
+        }
+
+        .button-next {
+            right: 10px;
+        }
+
+        .info-text {
+            position: absolute;
+            top: 300px;
+            left: 750px;
+            color: white;
+            font-size: 1.4em;
+            z-index: 2; /* Đặt info-text trên lớp phủ */
+            font-weight: 700;
+            width: 600px;
+            white-space: normal;
+            line-height: 1.4;
+            word-wrap: break-word;
+            overflow: hidden;
+            opacity: 0; /* Ẩn info-text ban đầu */
+            transition: opacity 2s ease; /* Hiệu ứng cho info-text */
+        }
+
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            font-size: 1.0em;
+            line-height: 1.5;
+        }
+
+        li {
+            padding: 5px 0;
+            font-weight: 300;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        .highlight {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+        }
+
+        .info-background {
+            position: absolute;
+            top: 255px;
+            left: 700px;
+            width: 550px;
+            height: 400px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-radius: 10px;
+            z-index: 0;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            opacity: 0; /* Ẩn background info ban đầu */
+            transition: opacity 2s ease; /* Hiệu ứng cho background */
+        }
+
+        .robot-image {
+            position: absolute;
+            bottom: 0px;
+            right: -270px;
+            width: 900px;
+            height: auto;
+            z-index: 1;
+            filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.8));
+            opacity: 0; /* Ẩn robot-image ban đầu */
+            transition: opacity 2s ease; /* Hiệu ứng cho robot-image */
+        }
+
+        /* Phần nền cho tiêu đề FUTURE */
+        .future-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2; /* Đặt tiêu đề trên lớp phủ */
+            color: white;
+            font-size: 3em;
+            font-weight: bold;
+            opacity: 0; /* Ẩn tiêu đề ban đầu */
+            transition: opacity 2s ease; /* Hiệu ứng cho tiêu đề */
+        }
+        .logo1 {
+    display: none; /* Ẩn logo ban đầu */
+    position: absolute; /* Đặt vị trí logo */
+    top: -50px; /* Vị trí từ trên xuống */
+    left: 50%; /* Đặt giữa theo chiều ngang */
+    transform: translateX(-50%); /* Căn giữa */
+    z-index: 2; /* Đặt trên lớp phủ */
+    
+}
+.logo-text {
+    color: white; /* Text color */
+    font-size: 1.2em; /* Font size */
+    font-weight: bold; /* Font weight */
+    margin-right: 800px; /* Space between text and buttons */
+    align-self: center; /* Center vertically */
+}
+    </style>
+</head>
+<body>
+    <div class="background-overlay"></div> <!-- Lớp phủ mờ cho nền -->
+
+    <div class="video-background" id="videoBackground">
+        <video autoplay muted>
+            <source src="start.mp4" type="video/mp4">s
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Lớp che phủ -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Tiêu đề FUTURE -->
+    <div class="future-title" id="futureTitle"></div>
+
+    <!-- Menu -->
+    <div class="menu-container">
+        <div class="menu">
+            <span class="logo-text">FUTURETOPIA©</span>
+            <button onclick="showFutureCity()">FUTURE CITY</button>
+            <button onclick="showCityQuality()">CITY QUALITY</button>
+            <button onclick="alert('ABOUT US')">ABOUT US</button>
+        </div>
+    </div>
+
+    <!-- Nội dung -->
+    <div class="content" id="content">
+        <h1 id="mainTitle"></h1>
+        <p id="description"></p>
+    </div>
+    <div class="logo1" id="logo1">
+        <img src="title2.png" alt="Title">
+    </div>
+
+    <!-- Video nền tương lai -->
+    <div class="video-background" id="futureVideoBackground" style="display: none;">
+        <video autoplay loop muted>
+            <source src="future.mp4" type="video/mp4">
+           
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    <!-- Carousel -->
+    <div class="carousel" id="carousel">
+        <div class="carousel-images" id="carouselImages">
+            <img src="x1.jpg" alt="Hình 1">
+            <img src="x2.jpg" alt="Hình 2">
+            <img src="x3.jpg" alt="Hình 3">
+            <img src="x4.jpg" alt="Hình 4">
+            <img src="x5.jpg" alt="Hình 5">
+            <img src="x6.jpg" alt="Hình 6">
+        </div>
+        <button class="carousel-button button-prev" onclick="moveCarousel(-1)">&#10094;</button>
+        <button class="carousel-button button-next" onclick="moveCarousel(1)">&#10095;</button>
+    </div>
+
+    <!-- Info Background -->
+    <div class="info-background" id="infoBackground"></div>
+
+    <!-- Info Text -->
+    <div class="info-text" id="infoText">
+        <strong><span class="highlight"><i>Green City PLANS ★:</i></span> <br></strong>
+        <br>
+        <ul>
+            <li>🌟 Green spaces</li>
+            <li>🌟 Sustainable transportation</li>
+            <li>🌟 Renewable energy</li>
+            <li>🌟 Smart water management</li>
+            <li>🌟 Sustainable architecture</li>
+            <li>🌟 Education</li>
+        </ul>
+    </div>
+
+    <!-- Hình ảnh robot -->
+    <img src="robot.png" alt="Robot" class="robot-image" id="robotImage">
+
+    <script>
+        let currentIndex = 0;
+        const images = document.querySelectorAll('.carousel-images img');
+        const totalImages = images.length;
+
+        function moveCarousel(direction) {
+            currentIndex += direction;
+
+            if (currentIndex < 0) {
+                currentIndex = totalImages - 1;
+            } else if (currentIndex >= totalImages) {
+                currentIndex = 0;
+            }
+
+            const offset = -currentIndex * 500;
+            document.getElementById('carouselImages').style.transform = `translateX(${offset}px)`;
+        }
+
+        setInterval(() => {
+            moveCarousel(1);
+        }, 3000);
+
+        function showFutureCity() {
+            const description = document.getElementById('description');
+            description.innerHTML = "";
+            hideVideo();
+            showAdditionalContent();
+            showFutureTitle();
+            document.body.style.backgroundImage = "url('1.jpg')";
+        }
+
+        function showCityQuality() {
+            const description = document.getElementById('description');
+            description.innerHTML = "City Quality focuses on the livability, environmental health, and economic vitality of urban spaces. It emphasizes creating inclusive, safe, and sustainable communities. Enhancing public spaces and ensuring access to services contribute to overall quality of life.";
+
+            const futureVideoBackground = document.getElementById('futureVideoBackground');
+            futureVideoBackground.style.display = 'block'; // Hiện video nền tương lai
+
+            showAdditionalContent();
+            showFutureTitle();
+            document.body.style.backgroundImage = "url('1.jpg')";
+        }
+
+        function hideVideo() {
+            const overlay = document.getElementById('overlay');
+            overlay.style.opacity = '0'; // Mờ lớp che
+            setTimeout(() => {
+                document.getElementById('videoBackground').style.display = 'none'; // Ẩn video start
+            }, 2000); // Thời gian để lớp che mờ đi
+        }
+
+        function showAdditionalContent() {
+            const content = document.getElementById('content');
+            const carousel = document.getElementById('carousel');
+            const infoText = document.getElementById('infoText');
+            const infoBackground = document.getElementById('infoBackground');
+            const robotImage = document.getElementById('robotImage');
+
+            content.style.opacity = '1'; // Hiện nội dung
+            carousel.style.opacity = '1'; // Hiện carousel
+            infoText.style.opacity = '1'; // Hiện info-text
+            infoBackground.style.opacity = '1'; // Hiện background info
+            robotImage.style.opacity = '1'; // Hiện robot-image
+        }
+
+        function showFutureTitle() {
+            const futureTitle = document.getElementById('futureTitle');
+            futureTitle.style.opacity = '1'; // Hiện tiêu đề FUTURE
+        }
+
+        // Đảm bảo nội dung ẩn khi tải trang
+        window.onload = function() {
+            const content = document.getElementById('content');
+            const carousel = document.getElementById('carousel');
+            const infoText = document.getElementById('infoText');
+            const robotImage = document.getElementById('robotImage');
+            const futureTitle = document.getElementById('futureTitle');
+
+            content.style.opacity = '0'; // Nội dung ẩn khi tải trang
+            carousel.style.opacity = '0'; // Ẩn carousel ban đầu
+            infoText.style.opacity = '0'; // Ẩn info-text ban đầu
+            robotImage.style.opacity = '0'; // Ẩn robot-image ban đầu
+            futureTitle.style.opacity = '0'; // Ẩn tiêu đề FUTURE ban đầu
+        };
+        function showFutureCity() {
+    const description = document.getElementById('description');
+    description.innerHTML = "";
+    hideVideo();
+    showAdditionalContent();
+    showFutureTitle();
+    
+    // Hiện hình ảnh title2.png
+    const logo1 = document.getElementById('logo1');
+    logo1.style.display = 'block'; // Hiện logo
+
+    document.body.style.backgroundImage = "url('1.jpg')";
+}
+    </script>
+
+</body>
+</html>
